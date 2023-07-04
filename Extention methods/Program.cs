@@ -113,15 +113,24 @@ public static class Extientions
         {
             for (int i = 0; i < properties.Length; i++)
             {
-                string str1 = properties[i].GetValue(obj, null).ToString();
-                string str2 = properties[i].PropertyType.ToString();
-                if (str1 == str2)
+                //string str1 = properties[i].GetValue(obj).ToString();
+                //string str2 = properties[i].PropertyType.ToString();
+                try
+                {
+                    string str1 = properties[i].GetValue(obj).ToString();
+                    string str2 = properties[i].PropertyType.ToString();
+                    if (str1 == str2)
+                    {
+                        recursion(properties[i].GetType().GetProperties());
+                    }
+                    else
+                    {
+                        toRetrun += "'" + properties[i].Name + "':" + properties[i].GetValue(obj) + "\n";
+                    }
+                }
+                catch (Exception)
                 {
                     recursion(properties[i].GetType().GetProperties());
-                }
-                else
-                {
-                    toRetrun += "'" + properties[i].Name + "':" + properties[i].GetValue(obj) + "\n";
                 }
             }
             toRetrun += "}";
