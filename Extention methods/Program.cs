@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Xml.Linq;
 
 public static class Extientions
@@ -106,21 +107,39 @@ public static class Extientions
     }
     public static string ToJson(this object obj)//Task 6
     {
-        string toRetrun = "{'";
+        string toRetrun = "{" + "\n";
         var properties = obj.GetType().GetProperties();
-        Console.WriteLine(properties.ToString());
+        void recursion(PropertyInfo[] properties)
+        {
+            for (int i = 0; i < properties.Length; i++)
+            {
+                string str1 = properties[i].GetValue(obj, null).ToString();
+                string str2 = properties[i].PropertyType.ToString();
+                if (str1 == str2)
+                {
+                    recursion(properties[i].GetType().GetProperties());
+                }
+                else
+                {
+                    toRetrun += "'" + properties[i].Name + "':" + properties[i].GetValue(obj) + "\n";
+                }
+            }
+            toRetrun += "}";
+        }
+        recursion(properties);
+        Console.WriteLine(toRetrun);
         return toRetrun;
     }
 }
 class School
 {
-    public Principal Pl;
-    public string SchoolName;
+    public Principal PrincipalName { get; set; }
+    public string SchoolName { get; set; }
 }
 class Principal
 {
-    public string Name;
-    public int Age;
+    public string Name { get; set; }
+    public int Age { get; set; }
 }
 class Program
 {
@@ -131,7 +150,7 @@ class Program
         principal.Age = 35;
         School school = new School();
         school.SchoolName = "Charenci anvan dproc";
-        school.Pl = principal;
-        Console.WriteLine(school.ToJson());
+        school.PrincipalName = principal;
+        school.ToJson();
     }
 }
