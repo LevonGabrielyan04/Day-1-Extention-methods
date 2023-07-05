@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Xml.Linq;
 
 public static class Extientions
@@ -105,61 +108,84 @@ public static class Extientions
         str.Reverse();
         return str;
     }
-    public static string ToJson(this object obj)//Task 6
+    //public static string ToJson(this object obj)//Task 6 
+    //{
+    //    return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+    //}
+    public static double Round(this double num, int acuracity)//Task 7
     {
-        string toRetrun = "{" + "\n";
-        var properties = obj.GetType().GetProperties();
-        void recursion(PropertyInfo[] properties)
-        {
-            for (int i = 0; i < properties.Length; i++)
-            {
-                //string str1 = properties[i].GetValue(obj).ToString();
-                //string str2 = properties[i].PropertyType.ToString();
-                try
-                {
-                    string str1 = properties[i].GetValue(obj).ToString();
-                    string str2 = properties[i].PropertyType.ToString();
-                    if (str1 == str2)
-                    {
-                        recursion(properties[i].GetType().GetProperties());
-                    }
-                    else
-                    {
-                        toRetrun += "'" + properties[i].Name + "':" + properties[i].GetValue(obj) + "\n";
-                    }
-                }
-                catch (Exception)
-                {
-                    recursion(properties[i].GetType().GetProperties());
-                }
-            }
-            toRetrun += "}";
-        }
-        recursion(properties);
-        Console.WriteLine(toRetrun);
-        return toRetrun;
+        string numStr = num.ToString();
+        int index = numStr.IndexOf(".");
+        numStr = numStr.Substring(0, index + acuracity + 1);
+
+        return Convert.ToDouble(numStr);
     }
+    public static bool FileExists(this string path)//Task 8
+    {
+        return File.Exists(path);
+    }
+
+    public static T ConvertToEnum<T>(this string arg)//Task 9
+    {
+        return (T)Enum.Parse(typeof(T),arg);
+    }
+
+    public static List<T> FilterList<T>(this IEnumerable<T> arrayToBeFiltered,Func<T,bool> condition)//Task 10
+    {
+        //List<T> toReturn = new List<T>();
+        //for (int i = 0; i < arrayToBeFiltered.Count(); i++)
+        //{
+        //    if (condition(arrayToBeFiltered.ToList()[i]))
+        //    {
+        //        toReturn.Add(arrayToBeFiltered.ToList()[i]);
+        //    }
+        //}
+        //return toReturn;
+        return arrayToBeFiltered.Where(condition).ToList();
+    }
+
+    public static int CalaculateTotalDuration(this IEnumerable<CallRecord> arg,DateTime start,DateTime end)//Task 11
+    {
+
+        int totalDuration = 0;
+        foreach (CallRecord record in arg)
+        {
+            if(record.callDate >= start && record.callDate <= end)
+            totalDuration += record.duration;   
+        }
+        return totalDuration;
+    }
+   public static 
+
 }
-class School
-{
-    public Principal PrincipalName { get; set; }
-    public string SchoolName { get; set; }
-}
-class Principal
-{
-    public string Name { get; set; }
-    public int Age { get; set; }
-}
+ public class CallRecord : IEnumerable<CallRecord>
+    {
+        public int duration;
+        public int cost;
+        public DateTime callDate;
+        public CallRecord(int duration, int cost, DateTime arg)
+        {
+            this.duration = duration;
+            this.cost = cost;
+            callDate = arg;
+        }
+
+        public IEnumerator<CallRecord> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 class Program
 {
     public static void Main()
     {
-        Principal principal = new Principal();
-        principal.Name = "Vazgen";
-        principal.Age = 35;
-        School school = new School();
-        school.SchoolName = "Charenci anvan dproc";
-        school.PrincipalName = principal;
-        school.ToJson();
+
     }
 }
+
