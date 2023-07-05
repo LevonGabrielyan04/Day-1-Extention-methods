@@ -154,9 +154,97 @@ public static class Extientions
             totalDuration += record.duration;   
         }
         return totalDuration;
+    } 
+    public static List<Sms> FilterSms(this IEnumerable<Sms> listToFilter, string keyword)//Task 12
+    {
+        return listToFilter.Where(a => a.Text.Contains(keyword) || a.Sender == keyword).ToList();
     }
-   public static 
+    public static string FormatNumber(this string number)//Task 13
+    {
+        return number.Insert(0,"(").Insert(4,")").Insert(1,"+").Insert(6,"-").Insert(9,"-").Insert(13,"-");
+    }
+    public static int CalaculateTotalDataUsage(this IEnumerable<DataUsage> arg,DateTime start,DateTime end)//Task 14
+    {
 
+        int totalDuration = 0;
+        foreach (DataUsage record in arg)
+        {
+            if(record.Date >= start && record.Date <= end)
+            totalDuration += record.DataUsed;   
+        }
+        return totalDuration;
+    }
+    static Plan plan1 = new Plan(3000,500,3);
+    static Plan plan2 = new Plan(15000,10000,10);
+    public static int CostCalculator(this IEnumerable<CallRecord> arg,Plan plan)//Task 15
+    {
+        int totalDuration = 0;
+        int totalCost = 0;
+        DateTime end = DateTime.Now.AddDays(DateTime.Now.Day * (-1));
+        DateTime start = DateTime.Now.AddDays(DateTime.Now.Day * (-1)).AddMonths(-1);
+        foreach (CallRecord record in arg)
+        {
+            if(record.callDate >= start && record.callDate <= end)
+            totalDuration += record.duration;   
+        }
+        int minutesDiference = plan.Minutes - totalDuration;
+        if (minutesDiference >= 0)
+            return plan.Cost;
+        return plan.Cost + minutesDiference * (-1) * plan.StandartMinutesCost;
+    }
+    public static int CostCalculator(this IEnumerable<DataUsage> arg,Plan plan)
+    { 
+        double totalGBs = 0;
+        int totalCost = 0;
+        DateTime end = DateTime.Now.AddDays(DateTime.Now.Day * (-1));
+        DateTime start = DateTime.Now.AddDays(DateTime.Now.Day * (-1)).AddMonths(-1);
+        foreach (DataUsage record in arg)
+        {
+            if(record.Date >= start && record.Date <= end)
+            totalGBs += record.DataUsed;   
+        }
+        double InternetDiference = plan.Internet - totalGBs;
+        if (InternetDiference >= 0)
+            return plan.Cost;
+        return plan.Cost + (int)(InternetDiference * (-1) * plan.StandartInternetCost);
+    }
+    public static GeoLocation FindNearestTower(this GeoLocation userLocation,List<GeoLocation> towers)
+    {
+
+    }
+}
+public class GeoLocation
+{
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public double CalculateDistance(GeoLocation A , GeoLocation B)
+    {
+
+    }
+}
+public class Plan
+{
+    public int Cost;
+    public int Minutes;
+    public int Internet;
+    public readonly int StandartMinutesCost = 10;
+    public readonly int StandartInternetCost = 1000;
+    public Plan(int cost, int minutes, int internet)
+    {
+        Cost = cost;
+        Minutes = minutes;
+        Internet = internet;
+    }
+}
+public class Sms
+{
+    public Sms(string arg, string sender)
+    {
+        Text = arg;
+        Sender = sender;
+    }
+    public string Text;
+    public string Sender;
 }
  public class CallRecord : IEnumerable<CallRecord>
     {
@@ -180,12 +268,17 @@ public static class Extientions
             throw new NotImplementedException();
         }
     }
+public class DataUsage
+{
+    public int DataUsed;
+    public DateTime Date;
+}
 
 class Program
 {
     public static void Main()
     {
-
+        
     }
 }
 
