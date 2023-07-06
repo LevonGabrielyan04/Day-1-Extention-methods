@@ -59,7 +59,6 @@ public static class Extientions
         {
             nums[k++] = func(item);
         }
-
         int temp;
         T tempObj;
         for (int i = 0; i < nums.Length; i++)
