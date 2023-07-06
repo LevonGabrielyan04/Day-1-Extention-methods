@@ -208,18 +208,60 @@ public static class Extientions
             return plan.Cost;
         return plan.Cost + (int)(InternetDiference * (-1) * plan.StandartInternetCost);
     }
-    public static GeoLocation FindNearestTower(this GeoLocation userLocation,List<GeoLocation> towers)
+    public static GeoLocation FindNearestTower(this GeoLocation userLocation,List<GeoLocation> towers)//Task 20
     {
-
+        double[] distances = new double[towers.Count];
+        int i = 0;
+        foreach (var item in towers)
+        {
+            distances[i++] = GeoLocation.CalculateDistance(userLocation, item);
+        }
+        return towers[Array.IndexOf(distances,distances.Min())];
     }
+    public static double CalculateSpeed(this IEnumerable<NetworkSpeed> arg,DateTime start,DateTime end)//16
+    {
+        int S = 0;
+        TimeSpan T = TimeSpan.Zero;
+        foreach (var item in arg)
+        {
+            if (item.DateStart >= start && item.DateEnd <= end)
+            {
+                S += item.DataUsed;
+                T += item.DateEnd - item.DateStart;
+            }
+        }
+        return S / T.TotalSeconds;
+    }
+    public static List<CallRecord> RoamingDetector(this IEnumerable<CallRecord> callRecords)//17
+    {
+        List<CallRecord> toReturn = new List<CallRecord>();
+        foreach (var callRecord in callRecords)
+        {
+            if (!CallRecord.ArmenianOperatorsList.Contains(callRecord.mobileOperator))
+            {
+                toReturn.Add(callRecord);
+            }
+        }
+        return toReturn;
+    }
+    //public static Plan PlanRecomendation(this CallRecord)
+    //{
+
+    //}
+}
+public class NetworkSpeed
+{
+    public int DataUsed;
+    public DateTime DateStart;
+    public DateTime DateEnd;
 }
 public class GeoLocation
 {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public double CalculateDistance(GeoLocation A , GeoLocation B)
+    public static double CalculateDistance(GeoLocation A , GeoLocation B)
     {
-
+        return 3440.1 * Math.Acos((Math.Sin(A.Latitude) * Math.Sin(B.Latitude)) + Math.Cos(A.Latitude) *Math.Cos(B.Latitude) * Math.Cos(A.Longitude - B.Longitude));
     }
 }
 public class Plan
@@ -248,9 +290,11 @@ public class Sms
 }
  public class CallRecord : IEnumerable<CallRecord>
     {
+        public static readonly string[] ArmenianOperatorsList = {"Ucom","Beeline","Rostelecom" };
         public int duration;
         public int cost;
         public DateTime callDate;
+        public string mobileOperator;
         public CallRecord(int duration, int cost, DateTime arg)
         {
             this.duration = duration;
