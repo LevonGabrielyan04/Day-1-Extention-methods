@@ -82,8 +82,9 @@ public static class Extientions
     }
     public static string ToFriendlyDate(this DateTime dt) //Task 3
     {
-        string[] mounths = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames;
-        return mounths[dt.Month - 1] + " " + dt.Day.ToString() + ", " + dt.Year.ToString();
+        //string[] mounths = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthNames;
+        //return mounths[dt.Month - 1] + " " + dt.Day.ToString() + ", " + dt.Year.ToString();
+        return dt.ToString("MMMM, dd, yyyy");
     }
 
     public static bool IsValidEmail(this string str) //Task 4
