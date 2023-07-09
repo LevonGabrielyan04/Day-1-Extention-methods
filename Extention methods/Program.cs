@@ -209,16 +209,6 @@ public static class Extientions
             return plan.Cost;
         return plan.Cost + (int)(InternetDiference * (-1) * plan.StandartInternetCost);
     }
-    public static GeoLocation FindNearestTower(this GeoLocation userLocation,List<GeoLocation> towers)//Task 20
-    {
-        double[] distances = new double[towers.Count];
-        int i = 0;
-        foreach (var item in towers)
-        {
-            distances[i++] = GeoLocation.CalculateDistance(userLocation, item);
-        }
-        return towers[Array.IndexOf(distances,distances.Min())];
-    }
     public static double CalculateSpeed(this IEnumerable<NetworkSpeed> arg,DateTime start,DateTime end)//16
     {
         int S = 0;
@@ -260,7 +250,16 @@ public static class Extientions
         }
         return new Plan(0,0,0);
     }
-
+    public static GeoLocation FindNearestTower(this GeoLocation userLocation,List<GeoLocation> towers)//Task 19
+    {
+        double[] distances = new double[towers.Count];
+        int i = 0;
+        foreach (var item in towers)
+        {
+            distances[i++] = GeoLocation.CalculateDistance(userLocation, item);
+        }
+        return towers[Array.IndexOf(distances,distances.Min())];
+    }
 }
 public class NetworkSpeed
 {
