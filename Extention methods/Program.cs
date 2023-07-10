@@ -235,15 +235,21 @@ public static class Extientions
         }
         return toReturn;
     }
-    public static Plan PlanRecomendation(this IEnumerable<CallRecord> callRecords)//18
+    public static Plan PlanRecomendation(this IEnumerable<CallRecord> callRecords,IEnumerable<DataUsage> dataUsages)//18
     {
         DateTime end = DateTime.Now.AddDays(DateTime.Now.Day * (-1));
         DateTime start = DateTime.Now.AddDays(DateTime.Now.Day * (-1)).AddMonths(-1);
         int totalMinutesUsed = callRecords.CalaculateTotalDuration(start, end);
+        int totalInternetUsed = 0;
+        foreach (DataUsage record in dataUsages)
+        {
+            if(record.Date >= start && record.Date <= end)
+            totalInternetUsed += record.DataUsed;   
+        }
         Plan.BuiltInPlans = Plan.BuiltInPlans.OrderBy( a => a.Minutes).ToArray();
         for (int i = 0; i < Plan.BuiltInPlans.Length; i++)
         {
-            if (Plan.BuiltInPlans[i].Minutes >= totalMinutesUsed)
+            if (Plan.BuiltInPlans[i].Minutes >= totalMinutesUsed && Plan.BuiltInPlans[i].Internet >= totalInternetUsed)
             {
                 return Plan.BuiltInPlans[i];
             }
